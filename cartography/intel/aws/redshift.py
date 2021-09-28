@@ -74,7 +74,7 @@ def load_redshift_cluster_data(
             ClusterIdentifier=cluster['ClusterIdentifier'],
             ClusterRevisionNumber=cluster['ClusterRevisionNumber'],
             ClusterStatus=cluster['ClusterStatus'],
-            DBName=cluster['DBName'],
+            DBName=cluster.get('DBName'),    # type: ignore
             Encrypted=cluster['Encrypted'],
             EndpointAddress=cluster.get('Endpoint').get('Address'),    # type: ignore
             EndpointPort=cluster.get('Endpoint').get('Port'),   # type: ignore
