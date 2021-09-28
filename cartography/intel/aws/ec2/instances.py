@@ -92,6 +92,7 @@ def load_ec2_instances(
     SET instance.instanceid = {InstanceId}, instance.publicdnsname = {PublicDnsName},
     instance.privateipaddress = {PrivateIpAddress}, instance.publicipaddress = {PublicIpAddress},
     instance.imageid = {ImageId}, instance.instancetype = {InstanceType}, instance.monitoringstate = {MonitoringState},
+    instance.name = {Name},
     instance.state = {State}, instance.launchtime = {LaunchTime}, instance.launchtimeunix = {LaunchTimeUnix},
     instance.region = {Region}, instance.lastupdated = {update_tag},
     instance.iaminstanceprofile = {IamInstanceProfile}, instance.availabilityzone = {AvailabilityZone},
@@ -181,6 +182,12 @@ def load_ec2_instances(
             else:
                 launch_time_unix = ""
 
+            name = ""
+            tags = instance.get("Tags")
+            for tag in instance.get("Tags", []):
+                if tag["Key"] == "Name":
+                    name = tag["Value"]
+
             neo4j_session.run(
                 ingest_instance,
                 InstanceId=instanceid,
@@ -191,6 +198,7 @@ def load_ec2_instances(
                 InstanceType=instance.get("InstanceType"),
                 IamInstanceProfile=instance.get("IamInstanceProfile", {}).get("Arn"),
                 ReservationId=reservation_id,
+                Name=name,
                 MonitoringState=monitoring_state,
                 LaunchTime=str(launch_time),
                 LaunchTimeUnix=launch_time_unix,
